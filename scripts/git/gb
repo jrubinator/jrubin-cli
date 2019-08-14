@@ -1,0 +1,9 @@
+#!/bin/bash
+command='branch'
+args=$@
+
+if [[ $# > 0 && -f $1 ]]; then
+    command='blame'
+fi
+
+git $command $@

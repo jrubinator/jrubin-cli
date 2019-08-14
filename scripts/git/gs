@@ -1,0 +1,29 @@
+#!/bin/bash
+action=$1
+command="status"
+extra_args=""
+
+if [ $action ]; then
+    shift
+    if [[ $action = "save"  ||
+          $action = "pop"   ||
+          $action = "apply" ||
+          $action = "drop"  ||
+          $action = "list"  ||
+          $action = "show"
+    ]]; then
+        command="stash"
+        if [[ $action = "list" ]]; then
+            # I don't understand how --pretty works sans quotes here.
+            # But it's necessary
+            extra_args_1=(
+                "-g"
+                "--pretty=format:%gd (%ar): %s"
+            )
+        fi
+    elif [[ $action != '.' ]]; then
+        command="show"
+    fi
+fi
+
+git $command $action "$@" "${extra_args_1[@]}"

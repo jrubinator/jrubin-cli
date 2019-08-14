@@ -1,0 +1,14 @@
+#!/bin/bash
+# checkout or commit
+flag=$1
+command="checkout"
+
+if [ $flag ]; then
+    if [[ $flag =~ ^- && $flag != '-b' ]]; then
+        command="commit"
+    fi
+else
+    command="commit"
+fi
+
+git $command "$@"
