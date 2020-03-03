@@ -1,0 +1,2 @@
+# cleans up iterm2's paste bracketing when accidentally left on
+printf '\e[?2004l'
