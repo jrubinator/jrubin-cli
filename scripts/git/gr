@@ -1,5 +1,4 @@
 #!/bin/bash
-git=git
 flag=$1
 
 if [[ -z $flag ]]; then
@@ -11,4 +10,4 @@ else
     command='rebase'
 fi
 
-echo "$git $command $@"
+git $command $@
