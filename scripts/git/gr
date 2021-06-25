@@ -1,0 +1,13 @@
+#!/bin/bash
+flag=$1
+
+if [[ -z $flag ]]; then
+    echo "$0 needs an argument"
+    exit 1
+elif [[ $flag =~ ^HEAD ]]; then
+    command='reset'
+else
+    command='rebase'
+fi
+
+git $command $@

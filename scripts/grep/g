@@ -1,0 +1,56 @@
+#!/bin/bash
+# grep
+
+# returns 1 if its a higher version
+# returns 2 if its lower
+# and 0 if equal
+(
+    vercomp ()
+    {
+        if [[ $1 == $2 ]]; then
+            return 0;
+        fi;
+        local IFS=.;
+        local i ver1=($1) ver2=($2);
+        for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+        do
+            ver1[i]=0;
+        done;
+        for ((i=0; i<${#ver1[@]}; i++))
+        do
+            if [[ -z ${ver2[i]} ]]; then
+                ver2[i]=0;
+            fi;
+            if ((10#${ver1[i]} > 10#${ver2[i]})); then
+                return 1;
+            fi;
+            if ((10#${ver1[i]} < 10#${ver2[i]})); then
+                return 2;
+            fi;
+        done;
+        return 0
+    }
+    attrs="-rn";
+    version=$(grep -V | grep -o '[0-9]\.[0-9.]\{3,\}');
+    vercomp $version '2.5.1';
+    if [[ $? == 1 ]]; then
+        node_exclusions="--exclude-dir=node_modules --exclude-dir=dist --exclude-dir=cdn";
+        attrs="$attrs -I --exclude-dir=.git --exclude-dir=local --exclude-dir=.build --exclude-dir=cover_db $node_exclusions";
+    fi;
+
+    non_option_candidates=0
+    for arg in "$@"; do
+        if [[ $arg != -* ]]; then
+            let "non_option_candidates+=1"
+        fi
+    done
+
+    if [[ $non_option_candidates < 2 ]]; then
+        vercomp $version '2.11'
+        if [[ $? == 2 ]]; then
+            set -- "$@" "."
+        fi
+    fi
+
+    echo grep --color $attrs $@
+)
