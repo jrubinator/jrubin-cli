@@ -11,4 +11,8 @@ function unclean {
     if [[ ! -z $open_jobs ]]; then
         printf "Jobs:\n$open_jobs\n\n"
     fi
+    wip=$(gs list)
+    if [[ ! -z $wip ]]; then
+        printf "WIP:\n$wip\n\n"
+    fi
 }
