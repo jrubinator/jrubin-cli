@@ -1,0 +1,11 @@
+#!/bin/bash
+sess=$1
+if [[ $? -ne 0 ]]; then
+    tmux new -d -s $sess
+    tmux new-w
+    tmux new-w
+    tmux new-w
+    tmux new-w
+fi
+jtmux-windows $sess
+tmux a -t $sess

@@ -1,0 +1,7 @@
+#!/bin/bash
+sess=$1
+tmux rename-w -t $sess:1 sb
+tmux rename-w -t $sess:2 ut
+tmux rename-w -t $sess:3 test
+tmux rename-w -t $sess:4 lib
+tmux rename-w -t $sess:5 3rd
