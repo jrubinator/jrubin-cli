@@ -54,7 +54,10 @@ function po {
 }
 
 function ee {
-    IFS='-' read -r -a jrubin_export_pathparts <<< "$project"
+    perlScript=$(dirname "${BASH_SOURCE[0]}")/navigation.pl
+    perlDir=$(perl $perlScript $@)
+
+    IFS='-' read -r -a jrubin_export_pathparts <<< "$perlDir"
     local jrubin_export_path=''
     for pathpart in "${jrubin_export_pathparts[@]}"; do
         if [[ $pathpart == 'gsg' ]]; then
