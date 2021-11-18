@@ -24,6 +24,10 @@ function dep {
 }
 
 function e {
+    perlScript=$(dirname "${BASH_SOURCE[0]}")/navigation.pl
+    perlDir=$(perl $perlScript $@)
+    echo "Using perl, would have cd'ed to '$perlDir'"
+
     if [[ $# < 1 ]]; then
         _e
     else

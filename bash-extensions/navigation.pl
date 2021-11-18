@@ -264,7 +264,7 @@ sub change_base {
 
 # TODO don't call these
 sub main_as_test {
-    e("my-repo");
+    e(@ARGV);
 }
 
 main_as_test();
