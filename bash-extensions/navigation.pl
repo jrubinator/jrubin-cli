@@ -15,6 +15,10 @@ our $JRCLI_MODE="gsg";
 # TODO cache this between runs
 our $JRUBIN_NAVIGATION_BASE;
 
+sub debug (@) {
+    say STDERR @_;
+}
+
 sub e {
     if (@_ < 1) {
         return _e()
@@ -126,7 +130,7 @@ sub change_base {
     if ($JRCLI_MODE) {
         $debug .= " (mode: $JRCLI_MODE)"
     }
-    say "$debug:";
+    debug "$debug:";
 
     my ($newproject, $newbase);
 
@@ -153,7 +157,7 @@ sub change_base {
                             #$newproject=$(basename $path);
                         }
                         else {
-                            say "  $project is not specific enough!";
+                            debug "  $project is not specific enough!";
                             return
                         }
                     }
@@ -182,7 +186,7 @@ sub change_base {
                                 #$newproject=$(basename $path)
                             }
                             else {
-                                say "  $project is not specific enough!";
+                                debug "  $project is not specific enough!";
                                 return
                             }
                         }
@@ -209,7 +213,7 @@ sub change_base {
                                 #$newproject=$(basename $path)
                             }
                             else {
-                                say "  $project is not specific enough!";
+                                debug "  $project is not specific enough!";
                                 return
                             }
                         }
