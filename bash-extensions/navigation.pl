@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use feature 'say';
 
+use File::Basename qw(basename);
 our $EXPORT_PATH = "$ENV{HOME}/.jrubincli/navigation";
 our $MODE_FILE = "$EXPORT_PATH/mode";
 system("mkdir -p $EXPORT_PATH");
@@ -152,9 +153,7 @@ sub change_base {
                             # Ignore the less-specific perl path
                         }
                         elsif ($newproject =~ $is_perl_rx) {
-                            die "NOT IMPLEMENTED YET";
-                            my $shouldquit=0;
-                            #$newproject=$(basename $path);
+                            $newproject = basename($path);
                         }
                         else {
                             debug "  $project is not specific enough!";
@@ -163,8 +162,7 @@ sub change_base {
                     }
                     # no newproject yet
                     else {
-                        die "basename not set yet";
-                        #$newproject=$(basename $path);
+                        $newproject = basename($path);
                     }
 
                 }
@@ -181,9 +179,7 @@ sub change_base {
                             }
                             # FIXME this is never set
                             elsif ( $newproject =~ $is_perl_rx ) {
-                                die "NOT IMPLEMENTED YET";;
-                                my $shouldquit=0;
-                                #$newproject=$(basename $path)
+                                $newproject = basename($path);
                             }
                             else {
                                 debug "  $project is not specific enough!";
@@ -191,8 +187,7 @@ sub change_base {
                             }
                         }
                         else {
-                            die "basename not set yet";
-                            #$newproject=$(basename $path)
+                            $newproject = basename($path);
                         }
                     }
                 }
@@ -208,9 +203,7 @@ sub change_base {
                                 # Ignore the less-specific perl path
                             }
                             elsif ( $newproject =~ $is_perl_rx ) {
-                                die "NOT IMPLEMENTED YET";
-                                my $shouldquit=0;
-                                #$newproject=$(basename $path)
+                                $newproject = basename($path);
                             }
                             else {
                                 debug "  $project is not specific enough!";
@@ -218,17 +211,18 @@ sub change_base {
                             }
                         }
                         else {
-                            die "basename not set yet";
-                            #$newproject=$(basename $path)
+                            $newproject = basename($path);
                         }
                     }
                 }
             }
 
+            if ($newproject) {
+                $project = $newproject
+            }
             # TODO modey stuff
             #if [[ -n $newproject ]]; then
             #    newbase=$base_to_check
-            #    project=$newproject
             #    if [[ -z $mode ]]; then
             #        if [[ $project =~ ^gsgx ]]; then
             #            mode=gsgx
