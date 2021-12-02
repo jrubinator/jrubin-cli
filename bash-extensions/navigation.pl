@@ -174,7 +174,7 @@ sub change_base {
             if (!$newproject) {
                 for my $path ( glob("$base_to_check/$project*") ) {
                     if ( -d $path ) { 
-                        if ( !$newproject ) {
+                        if ( $newproject ) {
                             my $is_perl_rx = qr/-(?:perl|carton)$/;
                             if ( $path =~ $is_perl_rx ) {
                                 # Ignore the less-specific perl path
@@ -202,7 +202,7 @@ sub change_base {
             if (!$newproject) {
                 for my $path ( glob("$base_to_check/$JRCLI_MODE$project*") ) {
                     if ( -d $path ) { 
-                        if ( !$newproject ) {
+                        if ( $newproject ) {
                             my $is_perl_rx=/-(?:perl|carton)$/;
                             if ( $path =~ $is_perl_rx ) {
                                 # Ignore the less-specific perl path
