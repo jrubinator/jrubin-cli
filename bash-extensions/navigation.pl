@@ -13,8 +13,7 @@ system("mkdir -p $EXPORT_PATH");
 #fi
 #our $JRCLI_MODE="$global_mode"
 our $JRCLI_MODE="gsg";
-# TODO cache this between runs
-our $JRUBIN_NAVIGATION_BASE;
+my $NAVIGATION_BASE = "$EXPORT_PATH/current-base";
 
 sub debug (@) {
     say STDERR @_;
@@ -40,7 +39,12 @@ sub e {
 }
 
 sub _e {
-    print "$JRUBIN_NAVIGATION_BASE/" . ($_[0] // '')
+    open my $fh, '<', $NAVIGATION_BASE
+        or die "Can't open $NAVIGATION_BASE: $!";
+    my $file_content = do { local $/; <$fh> };
+    print "$file_content/" .  ($_[0] // '');
+    close $fh
+        or warn "Can't close $NAVIGATION_BASE: $!";
 }
 
 sub ee {
@@ -256,7 +260,11 @@ sub change_base {
         #echo $project > ~/jrubin/export/project
     }
 
-    $JRUBIN_NAVIGATION_BASE = "$base/$project";
+    open (my $fh, '>', $NAVIGATION_BASE)
+        or die "Can't open $NAVIGATION_BASE: $!";
+    print $fh "$base/$project";
+    close $fh
+        or warn "Can't close $NAVIGATION_BASE: $!";
     _e()
 }
 
