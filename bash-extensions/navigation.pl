@@ -5,8 +5,8 @@ use feature 'say';
 use File::Basename qw(basename);
 our $EXPORT_PATH = "$ENV{HOME}/.jrubincli/navigation";
 our $MODE_FILE = "$EXPORT_PATH/mode";
-system("mkdir -p $EXPORT_PATH");
-# TODO check output
+system("mkdir -p $EXPORT_PATH")
+    and die "mkdir -p $EXPORT_PATH failed: $!";
 # TODO re-implement global-mode reading
 #if [[ -s $EXPORT_PATH/mode ]]; then
 #    global_mode=`cat $MODE_FILE`
