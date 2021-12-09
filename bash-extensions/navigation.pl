@@ -39,12 +39,8 @@ sub e {
 }
 
 sub _e {
-    open my $fh, '<', $NAVIGATION_BASE
-        or die "Can't open $NAVIGATION_BASE: $!";
-    my $file_content = do { local $/; <$fh> };
-    print "$file_content/" .  ($_[0] // '');
-    close $fh
-        or warn "Can't close $NAVIGATION_BASE: $!";
+    my $base = _read_file($NAVIGATION_BASE);
+    print "$base/" .  ($_[0] // '');
 }
 
 sub ee {
@@ -266,6 +262,16 @@ sub change_base {
     close $fh
         or warn "Can't close $NAVIGATION_BASE: $!";
     _e()
+}
+
+sub _read_file {
+    my $file = shift;
+
+    open my $fh, '<', $file or die "Can't open $file $!";
+    my $file_content = do { local $/; <$fh> };
+
+    close $fh or warn "Can't close $file $!";
+    return $file_content;
 }
 
 # TODO don't call these
