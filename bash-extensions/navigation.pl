@@ -7,12 +7,7 @@ our $EXPORT_PATH = "$ENV{HOME}/.jrubincli/navigation";
 our $MODE_FILE = "$EXPORT_PATH/mode";
 system("mkdir -p $EXPORT_PATH")
     and die "mkdir -p $EXPORT_PATH failed: $!";
-# TODO re-implement global-mode reading
-#if [[ -s $EXPORT_PATH/mode ]]; then
-#    global_mode=`cat $MODE_FILE`
-#fi
-#our $JRCLI_MODE="$global_mode"
-our $JRCLI_MODE="gsg";
+my $PROJECT_PREFIX  = _read_file("$EXPORT_PATH/current-prefix");
 my $NAVIGATION_BASE = "$EXPORT_PATH/current-base";
 
 sub debug (@) {
@@ -90,7 +85,7 @@ sub change_base {
         #    -m|--mode)
         #        mode="$1"
         #        shift
-        #        export JRCLI_MODE="$mode"
+        #        export PROJECT_PREFIX="$mode"
         #        echo $mode > ~/jrubin/export/mode
         #    ;;
         #    -f|--file|--file-path)
@@ -128,8 +123,8 @@ sub change_base {
     }
 
     my $debug="Exporting $project ($base)";
-    if ($JRCLI_MODE) {
-        $debug .= " (mode: $JRCLI_MODE)"
+    if ($PROJECT_PREFIX) {
+        $debug .= " (prefix $PROJECT_PREFIX)"
     }
     debug "$debug:";
 
@@ -141,11 +136,11 @@ sub change_base {
             $newproject=$project
         }
         # Try with mode
-        elsif ( -d "$base_to_check/$JRCLI_MODE-$project" ) {
-            $newproject="$JRCLI_MODE-$project"
+        elsif ( -d "$base_to_check/$PROJECT_PREFIX-$project" ) {
+            $newproject="$PROJECT_PREFIX-$project"
         }
         else {
-            for my $path ( glob("$base_to_check/$JRCLI_MODE-$project*") ) {
+            for my $path ( glob("$base_to_check/$PROJECT_PREFIX-$project*") ) {
                 if ( -d $path ) {
                     if ( $newproject) {
                         my $is_perl_rx = qr/-(?:perl|carton)$/;
@@ -195,7 +190,7 @@ sub change_base {
 
             # Try mode without -
             if (!$newproject) {
-                for my $path ( glob("$base_to_check/$JRCLI_MODE$project*") ) {
+                for my $path ( glob("$base_to_check/$PROJECT_PREFIX$project*") ) {
                     if ( -d $path ) { 
                         if ( $newproject ) {
                             my $is_perl_rx=/-(?:perl|carton)$/;
@@ -232,7 +227,7 @@ sub change_base {
             #    fi
 
             #    if [[ -n $mode ]]; then
-            #        export JRCLI_MODE="$mode"
+            #        export PROJECT_PREFIX="$mode"
             #        echo $mode > $MODE_FILE
             #    fi
             #    break
