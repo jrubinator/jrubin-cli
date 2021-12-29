@@ -235,7 +235,10 @@ sub change_base {
         # try another base
         }
 
-        last if $newproject;
+        if ($newproject) {
+            $base = $base_to_check;
+            last;
+        }
     }
 
     #if [[ -z $newbase ]]; then
