@@ -3,10 +3,14 @@ use warnings;
 use feature 'say';
 
 use File::Basename qw(basename);
+use Getopt::Long qw(GetOptionsFromArray);
 our $EXPORT_PATH = "$ENV{HOME}/.jrubincli/navigation";
+our $PATCH_PATH  = "$ENV{HOME}/.jrubincli/patches";
 our $MODE_FILE = "$EXPORT_PATH/mode";
-system("mkdir -p $EXPORT_PATH")
-    and die "mkdir -p $EXPORT_PATH failed: $!";
+for my $path ($EXPORT_PATH, $PATCH_PATH) {
+    system("mkdir -p $path")
+        and die "mkdir -p $path failed: $!";
+}
 my $PROJECT_PREFIX  = _read_file("$EXPORT_PATH/current-prefix");
 my $NAVIGATION_BASE = "$EXPORT_PATH/current-base";
 
@@ -58,50 +62,37 @@ sub apply_any_patches {
 }
 
 sub change_base {
+    my ($base, $global, $mode, $file_to_move);
+    GetOptionsFromArray(\@_,
+        'global!'     => \$global,
+        'base=s'      => \$base,
+        'mode=s'      => \$mode,
+        'file-path=s' => \$file_to_move,
+    );
     my $project = shift;
-    my ($base, $global, $mode);
 
-    while (@_) {
-        my $key = shift;
-
-        # TODO re-implement with Getopt
-        #case $key in
-        #    -g|--global)
-        #        global=1
-        #    ;;
-        #    -b|--base)
-        #        base=~/$1
-        #        shift
-        #        if [[ ${#base} < 1 ]]; then
-        #            >&2 echo "  You must specify a base!"
-        #            return
-        #        elif [[ ! -d $base ]]; then
-        #            >&2 echo "  $base doesn't seem to exist!"
-        #            return
-        #        fi
-
-        #        export EXP_BASE="$base"
-        #    ;;
-        #    -m|--mode)
-        #        mode="$1"
-        #        shift
-        #        export PROJECT_PREFIX="$mode"
-        #        echo $mode > ~/jrubin/export/mode
-        #    ;;
-        #    -f|--file|--file-path)
-        #        file_to_move="$1"
-        #        if [[ ! -f ./$file_to_move && ! -d ./$file_to_move ]]; then
-        #            >&2 echo "  $file_to_move doesn't seem to exist!"
-        #            unset $file_to_move
-        #        else
-        #            patch_dir=~/jrubin/export/patches
-        #            # Replace / with _ in filename
-        #            patch_file="${file_to_move//\//_}.patch"
-        #            mkdir -p $patch_dir
-        #            git diff $file_to_move > $patch_dir/$patch_file
-        #        fi
-        #    ;;
-        #esac
+    if (!$project) {
+        debug "  No project specified";
+        return
+    }
+    if (defined($base) && ! -d "$ENV{HOME}/$base") {
+        debug "  Base $base doesn't seem to exist!";
+        return;
+    }
+    if ($file_to_move) {
+        if (! -f "./$file_to_move" && ! -d "./$file_to_move") {
+            debug "  $file_to_move doesn't seem to exist!";
+            $file_to_move = undef;
+        }
+        else {
+            # Replace / with _ in filename
+            (my $patch_file= "$file_to_move.patch") =~ s{/}{_}g;
+            my $failed = system("git diff $file_to_move > $PATCH_PATH/$patch_file");
+            if ($failed) {
+                debug "  Could not generate patch for $file_to_move";
+                return;
+            }
+        }
     }
 
     my @bases_to_check;
