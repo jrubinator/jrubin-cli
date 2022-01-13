@@ -5,7 +5,7 @@ use feature 'say';
 use File::Basename qw(basename);
 use Getopt::Long qw(GetOptionsFromArray);
 our $EXPORT_PATH = "$ENV{HOME}/.jrubincli/navigation";
-our $PATCH_PATH  = "$ENV{HOME}/.jrubincli/patches";
+our $PATCH_PATH  = "$EXPORT_PATH/patches";
 our $MODE_FILE = "$EXPORT_PATH/mode";
 for my $path ($EXPORT_PATH, $PATCH_PATH) {
     system("mkdir -p $path")
@@ -33,6 +33,7 @@ sub e {
         #        cd ${BASH_REMATCH[1]}
         #    fi
         #fi
+        # TODO do this in the right directory
         apply_any_patches();
     }
 }
@@ -53,12 +54,13 @@ sub ee {
 }
 
 sub apply_any_patches {
-    # TODO re-implement in perl
-    #shopt -s nullglob
-    #for patch in ~/jrubin/export/patches/*; do
-    #    git apply $patch && rm $patch
-    #done
-    #shopt -u nullglob
+    for my $patch (glob("$PATCH_PATH/*")) {
+        my $failed = system("git apply $patch && rm $patch");
+        if ($failed) {
+            debug "  Could not apply patch $patch";
+            return;
+        }
+    }
 }
 
 sub change_base {
