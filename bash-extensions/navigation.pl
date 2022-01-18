@@ -99,7 +99,7 @@ sub change_base {
 
     my @bases_to_check;
     if ($base) {
-        @bases_to_check = ($base);
+        @bases_to_check = ("$ENV{HOME}/$base");
     }
     else {
         # TODO cache base
@@ -107,9 +107,8 @@ sub change_base {
         #if [[ ${#base} < 1 ]]; then
         #    base='work'
         #fi
-        $base = 'work';
+        $base = 'default';
         @bases_to_check = (
-            $base,
             (map { "$ENV{HOME}/$_" } qw(work alt)),
             split(' ' => `ls -d ~/go/src/*/*`),
         );
