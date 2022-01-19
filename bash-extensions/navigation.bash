@@ -82,6 +82,8 @@ function ee {
 
 function change_base  {
     function apply_any_patches {
+        echo "Changes are perl-applied now"
+        return
         shopt -s nullglob
         for patch in ~/jrubin/export/patches/*; do
             git apply $patch && rm $patch
