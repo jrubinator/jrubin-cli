@@ -125,7 +125,7 @@ sub change_base {
     for my $base_to_check (@bases_to_check) {
 
         if ( -d "$base_to_check/$project" ) {
-            $newproject=$project
+            $newproject=$project;
         }
         # Try with mode
         elsif ( -d "$base_to_check/$PROJECT_PREFIX-$project" ) {
@@ -228,18 +228,19 @@ sub change_base {
         }
 
         if ($newproject) {
-            $base = $base_to_check;
+            $newbase = $base_to_check;
             last;
         }
     }
 
-    #if [[ -z $newbase ]]; then
-    #    >&2 echo "  $project doesn't seem to exist"
-    #    return
-    #else
-    #    base=$newbase
+    if (!$newbase) {
+        debug "  $project doesn't seem to exist";
+        return;
+    }
+
+    #TODO cache base
     #    export EXP_BASE="$newbase"
-    #fi
+    $base = $newbase;
 
     if ($global) {
         # TODO cache global
