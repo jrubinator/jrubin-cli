@@ -24,7 +24,7 @@ sub e {
     }
     else {
         my $diving_board=`pwd`;
-        change_base(@_);
+        my $new_base = change_base(@_);
         # TODO reimplement in perl
         # if we changed between the same git repo in different structures
         # try to stay at the same level
@@ -33,14 +33,15 @@ sub e {
         #        cd ${BASH_REMATCH[1]}
         #    fi
         #fi
-        # TODO do this in the right directory
-        apply_any_patches();
+        apply_any_patches($new_base);
     }
 }
 
 sub _e {
     my $base = _read_file($NAVIGATION_BASE);
-    print "$base/" .  ($_[0] // '');
+    my $dest = "$base/" .  ($_[0] // '');
+    print $dest;
+    return $dest;
 }
 
 sub ee {
@@ -54,8 +55,9 @@ sub ee {
 }
 
 sub apply_any_patches {
+    my $where = shift;
     for my $patch (glob("$PATCH_PATH/*")) {
-        my $failed = system("git apply $patch && rm $patch");
+        my $failed = system("cd $where && git apply $patch && rm $patch");
         if ($failed) {
             debug "  Could not apply patch $patch";
             return;
@@ -252,7 +254,7 @@ sub change_base {
     print $fh "$base/$project";
     close $fh
         or warn "Can't close $NAVIGATION_BASE: $!";
-    _e()
+    return _e()
 }
 
 sub _read_file {
