@@ -249,11 +249,7 @@ sub change_base {
         #echo $project > ~/jrubin/export/project
     }
 
-    open (my $fh, '>', $NAVIGATION_BASE)
-        or die "Can't open $NAVIGATION_BASE: $!";
-    print $fh "$base/$project";
-    close $fh
-        or warn "Can't close $NAVIGATION_BASE: $!";
+    _write_file($NAVIGATION_BASE, "$base/$project");
     return _e()
 }
 
@@ -265,6 +261,15 @@ sub _read_file {
 
     close $fh or warn "Can't close $file $!";
     return $file_content;
+}
+
+sub _write_file {
+    my ($file, $contents) = @_;
+    open (my $fh, '>', $file)
+        or die "Can't open $file $!";
+    print $fh $contents;
+    close $fh
+        or warn "Can't close $file $!";
 }
 
 # TODO don't call these
