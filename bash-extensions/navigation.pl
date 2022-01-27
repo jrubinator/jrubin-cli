@@ -7,9 +7,14 @@ use Getopt::Long qw(GetOptionsFromArray);
 our $EXPORT_PATH = "$ENV{HOME}/.jrubincli/navigation";
 our $PATCH_PATH  = "$EXPORT_PATH/patches";
 our $MODE_FILE = "$EXPORT_PATH/mode";
+our $BASE_FILE = "$EXPORT_PATH/base";
 for my $path ($EXPORT_PATH, $PATCH_PATH) {
     system("mkdir -p $path")
         and die "mkdir -p $path failed: $!";
+}
+for my $file ($MODE_FILE, $BASE_FILE) {
+    system("touch $file")
+        and die "touch $file failed: $!";
 }
 my $PROJECT_PREFIX  = _read_file("$EXPORT_PATH/current-prefix");
 my $NAVIGATION_BASE = "$EXPORT_PATH/current-base";
@@ -104,13 +109,9 @@ sub change_base {
         @bases_to_check = ("$ENV{HOME}/$base");
     }
     else {
-        # TODO cache base
-        #base="$EXP_BASE"
-        #if [[ ${#base} < 1 ]]; then
-        #    base='work'
-        #fi
-        $base = 'default';
+        $base = _read_file($BASE_FILE) || 'default';
         @bases_to_check = (
+            $base,
             (map { "$ENV{HOME}/$_" } qw(work alt)),
             split(' ' => `ls -d ~/go/src/*/*`),
         );
@@ -240,9 +241,8 @@ sub change_base {
         return;
     }
 
-    #TODO cache base
-    #    export EXP_BASE="$newbase"
     $base = $newbase;
+    _write_file($BASE_FILE, $base);
 
     if ($global) {
         # TODO cache global
