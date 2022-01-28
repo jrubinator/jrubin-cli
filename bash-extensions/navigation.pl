@@ -6,18 +6,17 @@ use File::Basename qw(basename);
 use Getopt::Long qw(GetOptionsFromArray);
 our $EXPORT_PATH = "$ENV{HOME}/.jrubincli/navigation";
 our $PATCH_PATH  = "$EXPORT_PATH/patches";
-our $MODE_FILE = "$EXPORT_PATH/mode";
-our $BASE_FILE = "$EXPORT_PATH/base";
+our $PREFIX_FILE = "$EXPORT_PATH/current-prefix";
+our $BASE_FILE = "$EXPORT_PATH/current-base";
 for my $path ($EXPORT_PATH, $PATCH_PATH) {
     system("mkdir -p $path")
         and die "mkdir -p $path failed: $!";
 }
-for my $file ($MODE_FILE, $BASE_FILE) {
+for my $file ($PREFIX_FILE, $BASE_FILE) {
     system("touch $file")
         and die "touch $file failed: $!";
 }
-my $PROJECT_PREFIX  = _read_file("$EXPORT_PATH/current-prefix");
-my $NAVIGATION_BASE = "$EXPORT_PATH/current-base";
+my $PROJECT_PREFIX = _read_file("$PREFIX_FILE");
 
 sub debug (@) {
     say STDERR @_;
@@ -43,14 +42,14 @@ sub e {
 }
 
 sub _e {
-    my $base = _read_file($NAVIGATION_BASE);
+    my $base = _read_file($BASE_FILE);
     my $dest = "$base/" .  ($_[0] // '');
     print $dest;
     return $dest;
 }
 
 sub ee {
-    my $base = _read_file($NAVIGATION_BASE);
+    my $base = _read_file($BASE_FILE);
     my ($project) = $base =~ m{/([^/]+)$};
     my @pathparts = split '-' => $project;
 
@@ -71,11 +70,11 @@ sub apply_any_patches {
 }
 
 sub change_base {
-    my ($base, $global, $mode, $file_to_move);
+    my ($base, $global, $prefix, $file_to_move);
     GetOptionsFromArray(\@_,
         'global!'     => \$global,
         'base=s'      => \$base,
-        'mode=s'      => \$mode,
+        'prefix=s'    => \$prefix,
         'file-path=s' => \$file_to_move,
     );
     my $project = shift;
@@ -130,7 +129,7 @@ sub change_base {
         if ( -d "$base_to_check/$project" ) {
             $newproject=$project;
         }
-        # Try with mode
+        # Try with prefix
         elsif ( -d "$base_to_check/$PROJECT_PREFIX-$project" ) {
             $newproject="$PROJECT_PREFIX-$project"
         }
@@ -158,7 +157,7 @@ sub change_base {
                 }
             }
 
-            # Try no $mode at all
+            # Try no $prefix at all
             if (!$newproject) {
                 for my $path ( glob("$base_to_check/$project*") ) {
                     if ( -d $path ) { 
@@ -183,7 +182,7 @@ sub change_base {
                 }
             }
 
-            # Try mode without -
+            # Try prefix without -
             if (!$newproject) {
                 for my $path ( glob("$base_to_check/$PROJECT_PREFIX$project*") ) {
                     if ( -d $path ) { 
@@ -210,7 +209,8 @@ sub change_base {
             if ($newproject) {
                 $project = $newproject
             }
-            # TODO modey stuff
+
+            # TODO prefixy stuff
             #if [[ -n $newproject ]]; then
             #    newbase=$base_to_check
             #    if [[ -z $mode ]]; then
@@ -249,7 +249,7 @@ sub change_base {
         #echo $project > ~/jrubin/export/project
     }
 
-    _write_file($NAVIGATION_BASE, "$base/$project");
+    _write_file($BASE_FILE, "$base/$project");
     return _e()
 }
 
