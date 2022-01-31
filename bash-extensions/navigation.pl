@@ -16,7 +16,6 @@ for my $file ($PREFIX_FILE, $BASE_FILE) {
     system("touch $file")
         and die "touch $file failed: $!";
 }
-my $PROJECT_PREFIX = _read_file("$PREFIX_FILE");
 
 sub debug (@) {
     say STDERR @_;
@@ -87,6 +86,7 @@ sub change_base {
         debug "  Base $base doesn't seem to exist!";
         return;
     }
+    $prefix ||= _read_file("$PREFIX_FILE");
     if ($file_to_move) {
         if (! -f "./$file_to_move" && ! -d "./$file_to_move") {
             debug "  $file_to_move doesn't seem to exist!";
@@ -117,8 +117,8 @@ sub change_base {
     }
 
     my $debug="Exporting $project ($base)";
-    if ($PROJECT_PREFIX) {
-        $debug .= " (prefix $PROJECT_PREFIX)"
+    if ($prefix) {
+        $debug .= " (prefix $prefix)"
     }
     debug "$debug:";
 
@@ -130,11 +130,11 @@ sub change_base {
             $newproject=$project;
         }
         # Try with prefix
-        elsif ( -d "$base_to_check/$PROJECT_PREFIX-$project" ) {
-            $newproject="$PROJECT_PREFIX-$project"
+        elsif ( -d "$base_to_check/$prefix-$project" ) {
+            $newproject="$prefix-$project"
         }
         else {
-            for my $path ( glob("$base_to_check/$PROJECT_PREFIX-$project*") ) {
+            for my $path ( glob("$base_to_check/$prefix-$project*") ) {
                 if ( -d $path ) {
                     if ( $newproject) {
                         my $is_perl_rx = qr/-(?:perl|carton)$/;
@@ -184,7 +184,7 @@ sub change_base {
 
             # Try prefix without -
             if (!$newproject) {
-                for my $path ( glob("$base_to_check/$PROJECT_PREFIX$project*") ) {
+                for my $path ( glob("$base_to_check/$prefix$project*") ) {
                     if ( -d $path ) { 
                         if ( $newproject ) {
                             my $is_perl_rx=/-(?:perl|carton)$/;
@@ -209,29 +209,22 @@ sub change_base {
             if ($newproject) {
                 $project = $newproject
             }
-
-            # TODO prefixy stuff
-            #if [[ -n $newproject ]]; then
-            #    newbase=$base_to_check
-            #    if [[ -z $mode ]]; then
-            #        if [[ $project =~ ^gsgx ]]; then
-            #            mode=gsgx
-            #        elif [[ $project =~ ^gsg ]]; then
-            #            mode=gsg
-            #        fi
-            #    fi
-
-            #    if [[ -n $mode ]]; then
-            #        export PROJECT_PREFIX="$mode"
-            #        echo $mode > $MODE_FILE
-            #    fi
-            #    break
-            #fi
-        # try another base
         }
 
         if ($newproject) {
             $newbase = $base_to_check;
+
+            if ($prefix) {
+                undef $prefix unless $project =~ /^\Q$prefix/;
+            }
+            else {
+                ($prefix) = $project =~ /^([^-]+)-/;
+            }
+
+            if ($prefix) {
+                _write_file($PREFIX_FILE, $prefix);
+            }
+
             last;
         }
     }
