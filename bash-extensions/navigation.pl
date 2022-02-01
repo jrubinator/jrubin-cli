@@ -69,9 +69,8 @@ sub apply_any_patches {
 }
 
 sub change_base {
-    my ($base, $global, $prefix, $file_to_move);
+    my ($base, $prefix, $file_to_move);
     GetOptionsFromArray(\@_,
-        'global!'     => \$global,
         'base=s'      => \$base,
         'prefix=s'    => \$prefix,
         'file-path=s' => \$file_to_move,
@@ -235,13 +234,6 @@ sub change_base {
     }
 
     $base = $newbase;
-    _write_file($BASE_FILE, $base);
-
-    if ($global) {
-        # TODO cache global
-        #echo $project > ~/jrubin/export/project
-    }
-
     _write_file($BASE_FILE, "$base/$project");
     return _e()
 }
