@@ -26,23 +26,13 @@ sub e {
         return _e()
     }
     else {
-        my $diving_board=`pwd`;
         my $new_base = change_base(@_);
-        # TODO reimplement in perl
-        # if we changed between the same git repo in different structures
-        # try to stay at the same level
-        #if [[ ! $diving_board =~ ^$HOME/$base/ ]]; then
-        #    if [[ $diving_board =~ /$project/(.*)$ ]]; then
-        #        cd ${BASH_REMATCH[1]}
-        #    fi
-        #fi
         apply_any_patches($new_base);
     }
 }
 
 sub _e {
-    my $base = _read_file($BASE_FILE);
-    my $dest = "$base/" .  ($_[0] // '');
+    my $dest = _read_file($BASE_FILE);
     print $dest;
     return $dest;
 }
