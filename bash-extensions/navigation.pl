@@ -1,3 +1,4 @@
+# TODO document!
 use strict;
 use warnings;
 use feature 'say';
@@ -247,9 +248,4 @@ sub _write_file {
         or warn "Can't close $file $!";
 }
 
-# TODO don't call these
-sub main_as_test {
-    e(@ARGV);
-}
-
-main_as_test();
+e(@ARGV);
