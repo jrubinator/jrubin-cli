@@ -52,5 +52,5 @@
         fi
     fi
 
-    grep --color $attrs $@
+    grep --color $attrs "$@"
 )
