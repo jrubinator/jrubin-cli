@@ -124,7 +124,8 @@ sub change_base {
             $newproject="$prefix-$project"
         }
         else {
-            for my $path ( glob("$base_to_check/$prefix-$project*") ) {
+            my @paths = glob("$base_to_check/$prefix-$project*");
+            for my $path ( @paths ) {
                 if ( -d $path ) {
                     if ( $newproject) {
                         my $is_perl_rx = qr/-(?:perl|carton)$/;
@@ -135,7 +136,8 @@ sub change_base {
                             $newproject = basename($path);
                         }
                         else {
-                            debug "  $project is not specific enough!";
+                            debug "  $project is not specific enough. Did you mean:\n"
+                                . join("\n" => @paths);
                             return
                         }
                     }
@@ -149,7 +151,8 @@ sub change_base {
 
             # Try no $prefix at all
             if (!$newproject) {
-                for my $path ( glob("$base_to_check/$project*") ) {
+                my @paths = glob("$base_to_check/$project*");
+                for my $path ( @paths ) {
                     if ( -d $path ) { 
                         if ( $newproject ) {
                             my $is_perl_rx = qr/-(?:perl|carton)$/;
@@ -161,7 +164,8 @@ sub change_base {
                                 $newproject = basename($path);
                             }
                             else {
-                                debug "  $project is not specific enough!";
+                                debug "  $project is not specific enough. Did you mean:\n"
+                                    . join("\n" => @paths);
                                 return
                             }
                         }
@@ -174,7 +178,8 @@ sub change_base {
 
             # Try prefix without -
             if (!$newproject) {
-                for my $path ( glob("$base_to_check/$prefix$project*") ) {
+                my @paths = glob("$base_to_check/$prefix$project*");
+                for my $path ( @paths ) {
                     if ( -d $path ) { 
                         if ( $newproject ) {
                             my $is_perl_rx=/-(?:perl|carton)$/;
@@ -185,7 +190,8 @@ sub change_base {
                                 $newproject = basename($path);
                             }
                             else {
-                                debug "  $project is not specific enough!";
+                                debug "  $project is not specific enough. Did you mean:\n"
+                                    . join("\n" => @paths);
                                 return
                             }
                         }
