@@ -25,6 +25,9 @@ function dep {
 
 function e {
     perlScript=$(dirname "${BASH_SOURCE[0]}")/navigation.pl
-    cd $(perl $perlScript $@)
+    toDir=$(perl $perlScript $@)
+    if [[ -n $toDir ]]; then
+        cd $toDir
+    fi
 
 }
