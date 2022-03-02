@@ -211,10 +211,10 @@ sub change_base {
             $newbase = $base_to_check;
 
             if ($prefix) {
-                undef $prefix unless $project =~ /^\Q$prefix/;
+                undef $prefix unless $newproject =~ /^\Q$prefix/;
             }
             else {
-                ($prefix) = $project =~ /^([^-]+)-/;
+                ($prefix) = $newproject =~ /^([^-]+)-/;
             }
 
             if ($prefix) {
@@ -231,7 +231,7 @@ sub change_base {
     }
 
     $base = $newbase;
-    _write_file($BASE_FILE, "$base/$project");
+    _write_file($BASE_FILE, "$base/$newproject");
     return _e()
 }
 
