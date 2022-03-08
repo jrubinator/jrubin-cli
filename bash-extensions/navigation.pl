@@ -9,11 +9,12 @@ our $EXPORT_PATH = "$ENV{HOME}/.jrubincli/navigation";
 our $PATCH_PATH  = "$EXPORT_PATH/patches";
 our $PREFIX_FILE = "$EXPORT_PATH/current-prefix";
 our $BASE_FILE = "$EXPORT_PATH/current-base";
+our $PROJECT_FILE = "$EXPORT_PATH/current-project";
 for my $path ($EXPORT_PATH, $PATCH_PATH) {
     system("mkdir -p $path")
         and die "mkdir -p $path failed: $!";
 }
-for my $file ($PREFIX_FILE, $BASE_FILE) {
+for my $file ($PREFIX_FILE, $BASE_FILE, $PROJECT_FILE) {
     system("touch $file")
         and die "touch $file failed: $!";
 }
@@ -33,17 +34,17 @@ sub e {
 }
 
 sub _e {
-    my $dest = _read_file($BASE_FILE);
+    my $dest = _read_file($PROJECT_FILE);
     print $dest;
     return $dest;
 }
 
 sub ee {
-    my $base = _read_file($BASE_FILE);
-    my ($project) = $base =~ m{/([^/]+)$};
+    my $project_path = _read_file($PROJECT_FILE);
+    my ($project) = $project_path =~ m{/([^/]+)$};
     my @pathparts = split '-' => $project;
 
-    my $dest = "$base/" . join("/" => map { ucfirst } @pathparts);
+    my $dest = "$project_path/" . join("/" => map { ucfirst } @pathparts);
     print $dest;
     return $dest;
 }
@@ -231,7 +232,9 @@ sub change_base {
     }
 
     $base = $newbase;
-    _write_file($BASE_FILE, "$base/$newproject");
+    # TODO stop double-storing these
+    _write_file($BASE_FILE, $base);
+    _write_file($PROJECT_FILE, "$base/$newproject");
     return _e()
 }
 
