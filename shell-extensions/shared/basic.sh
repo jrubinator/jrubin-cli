@@ -1,6 +1,3 @@
-alias vbash="vim ~/.bashrc"
-alias sbash=".   ~/.bashrc"
-
 # open vim with tabs
 alias vt="vim -p"
 # open all vim files in a directory, with tabs
