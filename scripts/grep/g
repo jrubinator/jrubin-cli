@@ -30,12 +30,12 @@
         done;
         return 0
     }
-    attrs="-rn";
+    attrs=("-rn")
     version=$(grep -V | grep -o '[0-9]\.[0-9.]\{3,\}');
     vercomp $version '2.5.1';
     if [[ $? == 1 ]]; then
         node_exclusions="--exclude-dir=node_modules --exclude-dir=dist --exclude-dir=cdn";
-        attrs="$attrs -I --exclude-dir=.git --exclude-dir=local --exclude-dir=.build --exclude-dir=cover_db $node_exclusions";
+        attrs+=(-I --exclude-dir=.git --exclude-dir=local --exclude-dir=.build --exclude-dir=cover_db --exclude='*.nfs*' $node_exclusions);
     fi;
 
     non_option_candidates=0
@@ -52,5 +52,5 @@
         fi
     fi
 
-    grep --color $attrs "$@"
+    grep --color "${attrs[@]}" "$@"
 )
