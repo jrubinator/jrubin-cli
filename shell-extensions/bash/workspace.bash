@@ -15,4 +15,10 @@ function unclean {
     if [[ ! -z $wip ]]; then
         printf "WIP:\n$wip\n\n"
     fi
+
+    if [[ ! -z "$local_branches$changed_files$open_jobs$wip" ]]; then
+        return 1
+    fi
+
+    return 0
 }
