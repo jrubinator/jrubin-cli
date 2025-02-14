@@ -1,5 +1,5 @@
 function unclean {
-    local_branches="$(gb | grep -v master)"
+    local_branches="$(gb | grep -v 'master\|main\|trunk')"
     if [[ ! -z $local_branches ]]; then
         printf "Local branches:\n$local_branches\n\n"
     fi
