@@ -2,8 +2,12 @@
 sess=$1
 tmux has -t $1 2> /dev/null
 if [[ $? -ne 0 ]]; then
-    tmuxlogdir=$HOME/.jtmux-logs
+    sesstypedir=$HOME/.jtmux-logs-$1
+    rm -rf $sesstypedir*
+
+    tmuxlogdir=$sesstypedir-$(date '+%Y-%m-%d')
     mkdir -p $tmuxlogdir
+
     # for tracking crashes, add -v for full output
     cd $tmuxlogdir && tmux -v new -d -s $sess
     tmux new-w
